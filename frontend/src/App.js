@@ -33,8 +33,6 @@ const App = () => {
   const addNumber = (event) => {
     event.preventDefault()
     const inList = persons.map(person => person.name)
-  
-    
 
     if (inList.includes(newName)) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
@@ -47,13 +45,17 @@ const App = () => {
           .changeNumber(id, changedNumber)
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== id ? person: returnedPerson))
+            setNotificationMessage(`Changed number of ${newName}`)
+              setTimeout(() => {
+                setNotificationMessage(null)
+                  },5000)
           })
-
-        setNotificationMessage(`Changed number of ${newName}`)
-        setTimeout(() => {
-          setNotificationMessage(null)
-        },5000)
-          
+          .catch(error => {
+            setNotificationMessage(`${error.response.data.error}`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+              }, 5000)
+          })
         setNewName('')
         setNewNumber('')
       }
@@ -70,12 +72,18 @@ const App = () => {
       .create(numberObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setNotificationMessage(`Added ${newName}`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+              }, 5000)
         })
-    
-    setNotificationMessage(`Added ${newName}`)
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000)
+        .catch(error => {
+          console.log(error.response.data)
+          setNotificationMessage(`${error.response.data.error}`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+              }, 5000)
+        })
     setNewName('')
     setNewNumber('')
   }
